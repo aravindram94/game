@@ -4,6 +4,7 @@ require 'game/base_config'
 require 'game/version'
 
 module Game
+  # Player class has attributes / methods of a player
   class Player
     attr_reader :player_id, :position, :money, :hotel_owned, :total_worth
 
@@ -13,12 +14,12 @@ module Game
       @player_id = player
       @position = 0
       @money = initial_money
-      @hotel_owned = [ ]
+      @hotel_owned = []
       @total_worth = @money
     end
 
     def show
-      player_hash = {
+      {
         player_id: @player_id,
         position: @position,
         money: @money,

@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
 require 'bundler/setup'
 require 'game'
 
-RSpec.configure do |config|
-  # Enable flags like --only-failures and --next-failure
-  config.example_status_persistence_file_path = '.rspec_status'
+Dir[File.expand_path('../support/**/*.rb', __FILE__)].each { |f| require f }
 
-  # Disable RSpec exposing methods globally on `Module` and `main`
-  config.disable_monkey_patching!
+RSpec.configure do |config|
+  config.color = true
 
   config.expect_with :rspec do |c|
     c.syntax = :expect

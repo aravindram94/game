@@ -1,0 +1,18 @@
+game1:
+  players: 3
+  cells_position: [E,E,J,H,E,T,J,T,E,E,H,J,T,H,E,E,J,H,E,T,J,T,E,E,H,J,T,H,J,E,E,J,H,E,T,J,T,E,E,H,J,T,E,H,E]
+  dice_output: [4,4,4,6,7,8,5,11,10,12,2,3,5,6,7,8,5,11,10,12,2,3,5,6,7,8,5,11,10,12]
+  initial_money: 1000
+  hotel_worth: 200
+  hotel_rent: 50
+  jail_fine: 150
+  treasure_value: 200
+game2:
+  players: 2
+  cells_position: [E,E,J,H,E,T,J,T,E,E,H,J,T,H,E,E,J,H,E,T,J,T,E,E,H,J,T,H,J,E,E,J,H,E,T,J,T,E,E,H,J,T,E,H,E]
+  dice_output: [4,4,4,6,7,8,5,11,10,12,2,3,5,6,7,8,5,11,10,12,2,3,5,6,7,8,5,11,10,12]
+  initial_money: 1200
+  hotel_worth: 200
+  hotel_rent: 50
+  jail_fine: 150
+  treasure_value: 200

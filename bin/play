@@ -1,27 +1,30 @@
+# frozen_string_literal: true
+
 #!/usr/bin/env ruby
 require 'active_support'
 require 'active_support/core_ext/hash'
 require 'game'
-require 'json'
 require 'optparse'
 require 'yaml'
-require 'erb'
 
 def user_config
-  @user_config ||= Game::Config.config
+  @user_config ||= Game::Config.config(@options[:file])
 end
 
 @options = {}
 OptionParser.new do |opts|
-  # opts.on('--environment env') { |arg| @options[:environment] = arg }
+  opts.on('-f', '--file_path FILE_PATH') { |argv| @options[:file] = argv }
   opts.on('-h', '--help') do
-    puts opts
+    puts @options
     exit
   end
 end.parse!
 
+
+
 user_config.each do |game, input_values|
   @play = Game::Config.new(input_values)
+  p "GAME: #{game}"
   game_result = @play.start
   game_result.each do |result|
     p "Player Id: #{result[:player_id]}"

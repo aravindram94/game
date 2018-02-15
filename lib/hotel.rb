@@ -4,6 +4,7 @@ require 'game/base_config'
 require 'game/version'
 
 module Game
+  # Hotel class has attributes / methods of a hotel
   class Hotel
     attr_reader :hotel_id, :hotel_rent, :hotel_worth, :owner
 
@@ -14,7 +15,7 @@ module Game
     end
 
     def show
-      hotel_hash = {
+      {
         hotel_id: @hotel_id,
         hotel_rent: @hotel_rent,
         owner: @owner,

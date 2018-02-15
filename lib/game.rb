@@ -8,15 +8,16 @@ require 'player'
 require 'hotel'
 
 module Game
+  # Game class has attributes / methods inorder to play a game
   class Config
     attr_reader :config, :players, :dice, :board, :hotels
 
-    MAX_MOVES = 5
+    MAX_MOVES = 10
 
     def initialize(config = {})
       @config = config
-      @players = [ ]
-      @hotels = [ ]
+      @players = []
+      @hotels = []
       validate_config
       create_players
       create_board
@@ -25,8 +26,8 @@ module Game
     end
 
     def start
-      moves = 0
-      while moves < MAX_MOVES do
+      moves = 1
+      while moves <= MAX_MOVES
         @players.each do |player|
           dice_output = @dice.roll
           new_position = @board.move_player(player[:position], dice_output)
@@ -38,12 +39,12 @@ module Game
       calculate_total_worth
     end
 
-     def update_points(player, new_position)
+    def update_points(player, new_position)
       case new_position[:cell_type]
       when 'J'
         point = -@board.jail_fine
       when 'T'
-        point = -@board.treasure_value
+        point = @board.treasure_value
       when 'H'
         calculate_hotel_point(player, new_position[:index])
       when 'E'
@@ -76,7 +77,7 @@ module Game
 
     def pay_owner(hotel_info, player)
       return if hotel_info[:owner].nil?
-      owner_info = @players.find {|player| player[:player_id] == hotel_info[:owner]}
+      owner_info = @players.find { |per| per[:player_id] == hotel_info[:owner] }
       player[:money] -= hotel_info[:hotel_rent]
       owner_info[:money] += hotel_info[:hotel_rent]
     end
@@ -97,7 +98,7 @@ module Game
     end
 
     def can_buy?(hotel_info, player)
-      player[:money] > hotel_info[:hotel_worth] ? true : false
+      player[:money] > hotel_info[:hotel_worth]
     end
 
     def pre_owned?(hotel_info)
@@ -106,22 +107,21 @@ module Game
 
     # Validate required keys for playing game are present
     def validate_config
-      valid_keys = [:players,
-        :cells_position,
-        :dice_output,
-        :initial_money,
-        :hotel_worth,
-        :hotel_rent,
-        :jail_fine,
-        :treasure_value
-      ]
+      valid_keys = %i[players
+                      cells_position
+                      dice_output
+                      initial_money
+                      hotel_worth
+                      hotel_rent
+                      jail_fine
+                      treasure_value]
       config_keys = @config.keys
       missing_keys = valid_keys - config_keys
       raise StandardError, "Missing #{missing_keys} keys in game.yml" unless missing_keys.empty?
     end
 
     def create_players
-      1.upto(config[:players])  do |player|
+      1.upto(config[:players]) do |player|
         player = Game::Player.new(player, config[:initial_money])
         @players.push(player.show)
       end
@@ -137,7 +137,11 @@ module Game
 
     def create_hotels
       @config[:cells_position].each_with_index do |cell_pos, index|
-        hotel = Game::Hotel.new(index, @config[:hotel_rent], @config[:hotel_worth]) if cell_pos == 'H'
+        if cell_pos == 'H'
+          hotel = Game::Hotel.new(index + 1,
+                                  @config[:hotel_rent],
+                                  @config[:hotel_worth])
+        end
         @hotels.push(hotel.show) unless hotel.nil?
       end
     end
