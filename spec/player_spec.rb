@@ -12,10 +12,10 @@ module Game
       end
     end
 
-    context '#total_worth?' do
+    context '#update_total_worth' do
       it 'returns the player hash' do
-        expect(subject).to receive(:total_worth?).and_return(100)
-        subject.total_worth?
+        expect(subject).to receive(:update_total_worth).and_return(100)
+        subject.update_total_worth
       end
     end
   end
