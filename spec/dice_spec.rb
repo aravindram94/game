@@ -3,8 +3,8 @@ require 'spec_helper'
 
 module Game
   describe Dice do
-    subject { described_class.new(dice_output)}
-    let(:dice_output) { [4,5,1,3] }
+    subject { described_class.new(options)}
+    let(:options) { { dice_output: [4,5,1,3] } }
 
     context '#initalize' do
       it 'creates a new object' do

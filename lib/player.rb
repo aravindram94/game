@@ -6,26 +6,23 @@ require 'game/version'
 module Game
   # Player class has attributes / methods of a player
   class Player
-    attr_reader :player_id, :position, :money, :hotel_owned, :total_worth
+    attr_accessor :player_id, :position, :money, :hotel_owned, :total_worth
 
-    def initialize(player = 0, initial_money = 0)
+    def initialize(options = {})
       # Default:
-      # hotel owned : -1, meaning player does not own a hotel yet
-      @player_id = player
+      # Position: 0
+      @player_id = options[:players]
       @position = 0
-      @money = initial_money
       @hotel_owned = []
+      @money = options[:initial_money]
       @total_worth = @money
     end
 
-    def show
-      {
-        player_id: @player_id,
-        position: @position,
-        money: @money,
-        hotel_owned: @hotel_owned,
-        total_worth: @total_worth
-      }
+    def update_total_worth
+      self.total_worth = money
+      hotel_owned.each do |hotel|
+        self.total_worth += hotel.hotel_worth
+      end
     end
   end
 end

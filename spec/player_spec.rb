@@ -3,25 +3,19 @@ require 'spec_helper'
 
 module Game
   describe Player do
-    let(:player) { double :player }
-    let(:players) { 1 }
-    let(:initial_money) { 1000 }
+    subject { described_class.new(options)}
+    let(:options) { { players: 3, initial_money: 100 } }
 
     context '#initalize' do
       it 'creates a new object' do
-        expect(Player).to receive(:new).with(player, initial_money).and_return(player)
-        Player.new(player, initial_money)
+        expect(subject).to be_a_kind_of(Player)
       end
     end
 
-    context '#show' do
-      let(:player_hash) { 'player_hash' }
-
+    context '#total_worth?' do
       it 'returns the player hash' do
-        expect_any_instance_of(Player).to receive(:show).and_return(player_hash)
-
-        p = Player.new
-        p.show
+        expect(subject).to receive(:total_worth?).and_return(100)
+        subject.total_worth?
       end
     end
   end

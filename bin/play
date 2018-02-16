@@ -27,7 +27,7 @@ user_config.each do |game, input_values|
   p "GAME: #{game}"
   game_result = @play.start
   game_result.each do |result|
-    p "Player Id: #{result[:player_id]}"
-    p "Player Worth: #{result[:total_worth]}"
+    p "Player Id: #{result.player_id}"
+    p "Player Worth: #{result.total_worth}"
   end
 end

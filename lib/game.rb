@@ -25,13 +25,14 @@ module Game
       create_hotels
     end
 
+    # Game starts here
     def start
       moves = 1
       while moves <= MAX_MOVES
         @players.each do |player|
           dice_output = @dice.roll
-          new_position = @board.move_player(player[:position], dice_output)
-          player[:position] = new_position[:index]
+          new_position = @board.move_player(player.position, dice_output)
+          player.position = new_position[:index]
           update_points(player, new_position)
         end
         moves += 1
@@ -39,6 +40,7 @@ module Game
       calculate_total_worth
     end
 
+    # Updates money for each player based on dice roll and board cell types
     def update_points(player, new_position)
       case new_position[:cell_type]
       when 'J'
@@ -46,63 +48,20 @@ module Game
       when 'T'
         point = @board.treasure_value
       when 'H'
-        calculate_hotel_point(player, new_position[:index])
+        hotel_info = @hotels.find { |h| h.hotel_id == new_position[:index] }
+        hotel_info.calculate_hotel_point(player)
       when 'E'
         point = 0
       end
-      player[:money] += point unless point.nil?
+      player.money += point unless point.nil?
     end
 
     private
 
+    # Update total_worth of each player => money remaining + hotels worth
     def calculate_total_worth
-      @players.each do |player|
-        player[:total_worth] = player[:money]
-        player[:hotel_owned].each do |id|
-          hotel_info = @hotels.find { |hotel| hotel[:hotel_id] == id }
-          player[:total_worth] += hotel_info[:hotel_worth]
-        end
-      end
-      @players.sort_by { |player| player[:total_worth] }
-    end
-
-    def calculate_hotel_point(player, hotel_id)
-      hotel_info = find_hotel(hotel_id)
-      if pre_owned?(hotel_info)
-        pay_owner(hotel_info, player)
-      else
-        buy_hotel(hotel_info, player)
-      end
-    end
-
-    def pay_owner(hotel_info, player)
-      return if hotel_info[:owner].nil?
-      owner_info = @players.find { |per| per[:player_id] == hotel_info[:owner] }
-      player[:money] -= hotel_info[:hotel_rent]
-      owner_info[:money] += hotel_info[:hotel_rent]
-    end
-
-    def find_hotel(hotel_id)
-      @hotels.find { |hotel| hotel[:hotel_id] == hotel_id }
-    end
-
-    def buy_hotel(hotel_info, player)
-      return unless can_buy?(hotel_info, player)
-      player[:money] -= hotel_info[:hotel_worth]
-      player[:hotel_owned].push(hotel_info[:hotel_id])
-      hotel_info[:owner] = player[:player_id]
-    end
-
-    def rent_price
-      @hotel_rent
-    end
-
-    def can_buy?(hotel_info, player)
-      player[:money] > hotel_info[:hotel_worth]
-    end
-
-    def pre_owned?(hotel_info)
-      hotel_info[:owner].nil? ? false : true
+      @players.each(&:update_total_worth)
+      @players.sort_by(&:total_worth).reverse!
     end
 
     # Validate required keys for playing game are present
@@ -121,29 +80,49 @@ module Game
     end
 
     def create_players
-      1.upto(config[:players]) do |player|
-        player = Game::Player.new(player, config[:initial_money])
-        @players.push(player.show)
+      1.upto(config[:players]) do |i|
+        options = {
+          players: i,
+          initial_money: @config[:initial_money]
+        }
+        player = create(Game::Player, options)
+        @players.push(player)
       end
     end
 
     def create_board
-      @board ||= Game::Board.new(@config)
+      options = {
+        cells_position: @config[:cells_position],
+        jail_fine: @config[:jail_fine],
+        treasure_value: @config[:treasure_value]
+      }
+      @board ||= create(Game::Board, options)
     end
 
     def create_dice
-      @dice ||= Game::Dice.new(@config[:dice_output])
+      options = {
+        dice_output: @config[:dice_output]
+      }
+      @dice ||= create(Game::Dice, options)
     end
 
     def create_hotels
       @config[:cells_position].each_with_index do |cell_pos, index|
         if cell_pos == 'H'
-          hotel = Game::Hotel.new(index + 1,
-                                  @config[:hotel_rent],
-                                  @config[:hotel_worth])
+          options = {
+            hotel_id: index + 1,
+            rent: @config[:hotel_rent],
+            worth: @config[:hotel_worth]
+          }
+          hotel = create(Game::Hotel, options)
         end
-        @hotels.push(hotel.show) unless hotel.nil?
+        @hotels.push(hotel) unless hotel.nil?
       end
+    end
+
+    # Reusable create method
+    def create(class_name, params = {})
+      class_name.new(params)
     end
   end
 end

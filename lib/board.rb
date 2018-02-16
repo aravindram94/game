@@ -10,10 +10,10 @@ module Game
                 :jail_fine,
                 :treasure_value
 
-    def initialize(config = {})
-      @cells_position = config[:cells_position]
-      @jail_fine = config[:jail_fine]
-      @treasure_value = config[:treasure_value]
+    def initialize(options = {})
+      @cells_position = options[:cells_position]
+      @jail_fine = options[:jail_fine]
+      @treasure_value = options[:treasure_value]
     end
 
     def move_player(current_position, dice_output)
